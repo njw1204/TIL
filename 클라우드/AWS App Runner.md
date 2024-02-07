@@ -13,8 +13,8 @@
 ## 빌드
 
 - Code 기반 배포, Image 기반 배포가 있음
-  - Code는 Git Repository에 직접 연동, Image는 Amazon ECR 연동
-  - Image 기반 배포 사용하고 CI/CD로 Amazon ECR에 Image 푸시하는게 다른 클라우드 서비스로 쓸때 확장성이 좋을듯
+  - Code는 Git Repository에 직접 연동해서 네이티브 런타임으로 배포, Image는 Amazon ECR 연동
+  - Image 기반 배포 사용하고 CI/CD로 Amazon ECR에 Image 푸시하는게 다른 클라우드 서비스 고려할때 확장성이 좋을듯
 
 ## 오토스케일링
 
@@ -38,16 +38,22 @@
   - HTTP는 Allow 상태 코드 커스텀이 안되는게 단점. 아마 200~399 대역까지 OK 판정인듯
 - 가장 큰 단점: 배포가 상당히 오래 걸림. 전체적인 과정이 느리고 Health Check도 오래하는 것 같음 (최종 배포까지 3분쯤)
 
-## 기타
+## 문제
 
-### 임시 스토리지 용량
+### 임시 스토리지 용량 작음
 - AWS App Runner는 서버리스답게 영구 스토리지는 없음
 - 서비스 배포시 임시 스토리지는 주어지나 3GB에 불과함
 - 파일 업로드 등 구현시 용량 부족할 수 있으니 구현 방법 고민 필요 (스트리밍, S3에 직접 업로드 등)
   - [Spring Boot에서 S3에 파일을 업로드하는 세 가지 방법](https://techblog.woowahan.com/11392/)
 
-### amazon-app-runner-deploy GitHub Actions 사용시 주의점
+### amazon-app-runner-deploy GitHub Actions 사용시 API 주의
 - StartDeployment API를 호출하지 않음. CreateService/UpdateService API만 호출
   - 단순히 설정 정보만 갱신하는 것. 이때 설정 정보가 기존과 달라지면 배포 등 알맞은 작업이 자동 진행됨
   - Image 배포를 위해서는 Image 이름 혹은 태그가 달라져야 배포가 진행됨
   - CI/CD 파이프라인 구성시 빌드마다 유니크한 Image 태그를 갖도록 구성
+
+### 리전 지원 한정
+- 현재 서울 리전 지원을 안함
+- 서울 리전의 EventBridge Scheduler에서 타 리전의 AWS App Runner 대상으로 API 호출 시도시 404 오류 발생 (ServiceArn을 맞는 값으로 넘겼는데도)
+  - ServiceArn 상관없이, 같은 리전의 AWS App Runner API 서버를 부를려고 해서 그런 것. 서울 리전에는 AWS App Runner API 서버가 없기에 404 오류가 발생함
+  - AWS App Runner 지원하는 리전에서 API 호출해야 됨
