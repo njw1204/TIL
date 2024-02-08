@@ -19,7 +19,7 @@
       }
 
       (async () => {
-        const response = await fetch('https://api.github.com/repos/njw1204/TIL/contents/' + pathKey + "?d=" + Date.now());
+        const response = await fetch('https://api.github.com/repos/njw1204/TIL/contents/' + pathKey + '?d=' + new Date().toISOString().split('T')[0], { cache: 'force-cache' });
         const data = await response.json();
         let htmlString = `<div class="container my-4" style="max-width: 1012px;">
           <div class="row">
