@@ -10,6 +10,10 @@
         pathKey = decodeURIComponent(path.trim()) || pathKey;
       }
 
+      if (pathKey === 'TIL') {
+        pathKey = 'TIL';
+      }
+
       (async () => {
         const response = await fetch('https://api.github.com/repos/njw1204/TIL/contents/' + pathKey);
         const data = await response.json();
