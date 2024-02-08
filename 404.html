@@ -22,7 +22,7 @@
         let htmlString = `<div class="container my-4">
           <div class="row">
             <div class="col">
-              <a href="/TIL" style="text-decoration: none;"><h1 class="display-4 text-dark">TIL</h1></a>
+              <a href="/TIL" style="text-decoration: none;"><h1 class="display-4 text-dark mb-4">TIL</h1></a>
             </div>
           </div>
           <div class="row">
@@ -44,9 +44,9 @@
           }
 
           if (file.type === 'dir') {
-            htmlString += `<li><a href="/TIL/${file.path}" style="text-decoration: none;"><i class="bi bi-folder-fill" style="margin-right: 5px"></i>${file.name}</a></li>`;
+            htmlString += `<li><a href="/TIL/${file.path}" style="text-decoration: none;"><i class="bi bi-folder-symlink-fill" style="margin-right: 5px"></i>${file.name}</a></li>`;
           } else {
-            htmlString += `<li><a href="/TIL/${file.path}" style="text-decoration: none;"><i class="bi bi-file-earmark" style="margin-right: 5px"></i>${file.name}</a></li>`;
+            htmlString += `<li><a href="/TIL/${file.path}" style="text-decoration: none;"><i class="bi bi-file-earmark-text" style="margin-right: 5px"></i>${file.name}</a></li>`;
           }
         }
 
