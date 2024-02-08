@@ -19,7 +19,7 @@
       (async () => {
         const response = await fetch('https://api.github.com/repos/njw1204/TIL/contents/' + pathKey);
         const data = await response.json();
-        let htmlString = `<div class="container my-4">
+        let htmlString = `<div class="container my-4" style="max-width: 1012px;">
           <div class="row">
             <div class="col">
               <a href="/TIL" style="text-decoration: none;"><h1 class="display-4 d-inline-block text-dark mb-3">TIL</h1></a>
