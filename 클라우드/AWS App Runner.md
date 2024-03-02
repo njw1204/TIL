@@ -18,10 +18,11 @@
 
 ## 오토스케일링
 
-- 로드밸런서에서 바로 애플리케이션으로 Request를 보내지 않고, Overflow Queue에 일단 보내서 Request 대기열을 두고 순차적으로 애플리케이션에 보냄 (메세지큐 같은거 잘 활용한듯)
-- Queue에 설정된 Request 제한 개수를 넘으면 인스턴스를 오토스케일링으로 추가하는 방식. Max 인스턴스 개수까지 꽉차면 HTTP 429 Too Many Requests 오류 반환
-  - 근데 한번에 Request가 들어오면 Max 인스턴스까지 다 추가는 되는데, 인스턴스에서 서버 Listen 준비가 안되어서 Request 처리가 안 돼 429 오류 발생 가능 (Listen한 이후에는 충분히 처리 가능한 Request 개수인데도)
-    - Queue 별로 절대적인 Request 개수 제한을 두는 방식이라 유동적인 대응이 어려움 (인스턴스 추가를 하는 임계값과 429 오류를 발생시키는 임계값을 각각 설정할 수 있으면 좋을듯)
+- Envoy 로드밸런서 사용. 바로 애플리케이션으로 Request를 보내지 않고, Overflow Queue에 일단 쌓아두고 순차적으로 애플리케이션에 보냄 (Traffic Burst 방지, 메세지큐 같은거 잘 활용한듯)
+- Queue에 설정된 Request 제한 개수를 넘으면 (혹은 예상되면 선제적으로) 인스턴스를 추가하는 방식.
+- 현재 큐가 꽉 찬 상태면 Request를 다음 큐로 옮겨 재시도, 모든 큐가 꽉차면 HTTP 429 오류 반환
+  - 근데 한번에 Request가 들어오면 Max 인스턴스까지 다 추가는 되는데, 인스턴스가 Cold Start 상태일 때는 Request 처리가 안 돼 429 오류 발생 가능
+    - Queue 별로 절대적인 Request 개수 제한을 두는 방식이라 유동적인 대응이 어려움 (WAS로 들어오는 Concurrency 임계값과 429 오류를 발생시키는 임계값을 따로 설정할 수 있으면 좋을듯)
   - [Traffic drops due to error 429 Too Many Requests when App Runner is scaling out](https://github.com/aws/apprunner-roadmap/issues/224)
 - Request 개수가 줄어들면 인스턴스 개수도 줄어들음
 - 개발자가 Queue까지 붙이면서 직접 구현하는건 상당히 까다로운 방식인데, 스마트하게 다 구현되어 있고 별거 설정할 것 없이 Request 임계값만 정하면 됨. 그런데도 꽤 프로덕션에 적합해서 좋음
